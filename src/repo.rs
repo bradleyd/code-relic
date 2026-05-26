@@ -1,6 +1,6 @@
 use std::path::{Path, PathBuf};
 
-use crate::{Error, Result};
+use crate::{Error, RepoSummary, Result};
 
 #[derive(Debug, Clone)]
 pub struct Repo {
@@ -34,6 +34,13 @@ impl Repo {
 
     pub fn is_rust(&self) -> bool {
         self.path.join("Cargo.toml").exists()
+    }
+
+    pub fn summary(&self) -> RepoSummary {
+        RepoSummary {
+            path: self.path.display().to_string(),
+            name: self.name(),
+        }
     }
 }
 

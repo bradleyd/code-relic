@@ -2,10 +2,7 @@ use std::path::PathBuf;
 
 use clap::{Parser, ValueEnum};
 
-use crate::{
-    Repo, Result,
-    checks::{Check, common::readme::ReadmeCheck},
-};
+use crate::{Config, Language, Repo, Report, Result, WeightedScorer, scanner::Scanner};
 
 #[derive(Debug, Clone, ValueEnum)]
 pub enum OutputFormat {
@@ -32,21 +29,57 @@ pub struct ScanArgs {
 pub async fn run(args: ScanArgs) -> Result<()> {
     let repo = Repo::new(&args.path)?;
 
-    let check = ReadmeCheck;
-    let findings = check.run(&repo).await?;
+    let scanner = Scanner::new(Config::default());
+    let findings = scanner.scan(&repo).await?;
+    let scorer = WeightedScorer::new();
+    let scores = scorer.score(&findings);
+
+    let languages = if repo.is_rust() {
+        vec![Language::Rust]
+    } else {
+        Vec::new()
+    };
+
+    let report = Report {
+        tool: "coderelic".to_string(),
+        version: env!("CARGO_PKG_VERSION").to_string(),
+        repo: repo.summary(),
+        languages,
+        scores,
+        findings,
+    };
 
     println!("CodeRelic scan");
-    println!("Repo: {}", repo.name());
-    println!("Path: {}", repo.path().display());
+    println!("Repo: {}", report.repo.name);
+    println!("Path: {}", report.repo.path);
     println!(
         "Rust project: {}",
-        if repo.is_rust() { "yes" } else { "no" }
+        if report.languages.contains(&Language::Rust) {
+            "yes"
+        } else {
+            "no"
+        }
     );
 
     println!();
-    println!("Findings:");
+    println!("AI Change Readiness: {} / 100", report.scores.overall);
+    println!("Build Health:          {}", report.scores.build_health);
+    println!("Test Confidence:       {}", report.scores.test_confidence);
+    println!(
+        "Complexity Control:    {}",
+        report.scores.complexity_control
+    );
+    println!("Context Quality:       {}", report.scores.context_quality);
+    println!(
+        "Dependency Hygiene:    {}",
+        report.scores.dependency_hygiene
+    );
+    println!(
+        "Blast Radius Safety:   {}",
+        report.scores.blast_radius_safety
+    );
 
-    for finding in findings {
+    for finding in &report.findings {
         println!("- [{:?}] {}", finding.severity, finding.title);
         println!("  {}", finding.description);
     }
