@@ -11,7 +11,6 @@ pub struct Finding {
     pub category: Category,
     pub language: Option<Language>,
     pub evidence: Evidence,
-    pub weight: f32,
 }
 
 impl Finding {
@@ -23,7 +22,6 @@ impl Finding {
         category: Category,
         language: Option<Language>,
         evidence: Evidence,
-        weight: f32,
     ) -> Self {
         Self {
             id: id.into(),
@@ -33,7 +31,6 @@ impl Finding {
             category,
             language,
             evidence,
-            weight,
         }
     }
 }
