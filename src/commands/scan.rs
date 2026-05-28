@@ -1,12 +1,15 @@
-use std::path::PathBuf;
+use std::{fs, path::PathBuf};
 
 use clap::{Parser, ValueEnum};
 
-use crate::{Config, Language, Repo, Report, Result, WeightedScorer, scanner::Scanner};
+use crate::{
+    Config, JsonRenderer, Language, MarkdownRenderer, Renderer, Repo, Report, Result, TextRenderer,
+    WeightedScorer, scanner::Scanner,
+};
 
 #[derive(Debug, Clone, ValueEnum)]
 pub enum OutputFormat {
-    Terminal,
+    Text,
     Json,
     Markdown,
 }
@@ -16,7 +19,7 @@ pub struct ScanArgs {
     #[arg(default_value = ".")]
     pub path: PathBuf,
 
-    #[arg(long, value_enum, default_value = "terminal")]
+    #[arg(long, value_enum, default_value = "text")]
     pub format: OutputFormat,
 
     #[arg(short, long)]
@@ -49,44 +52,22 @@ pub async fn run(args: ScanArgs) -> Result<()> {
         findings,
     };
 
-    println!("CodeRelic scan");
-    println!("Repo: {}", report.repo.name);
-    println!("Path: {}", report.repo.path);
-    println!(
-        "Rust project: {}",
-        if report.languages.contains(&Language::Rust) {
-            "yes"
-        } else {
-            "no"
-        }
-    );
+    let rendered = match args.format {
+        OutputFormat::Text => TextRenderer.render(&report)?,
+        OutputFormat::Json => JsonRenderer.render(&report)?,
+        OutputFormat::Markdown => MarkdownRenderer.render(&report)?,
+    };
 
-    println!();
-    println!("AI Change Readiness: {} / 100", report.scores.overall);
-    println!("Build Health:          {}", report.scores.build_health);
-    println!("Test Confidence:       {}", report.scores.test_confidence);
-    println!(
-        "Complexity Control:    {}",
-        report.scores.complexity_control
-    );
-    println!("Context Quality:       {}", report.scores.context_quality);
-    println!(
-        "Dependency Hygiene:    {}",
-        report.scores.dependency_hygiene
-    );
-    println!(
-        "Blast Radius Safety:   {}",
-        report.scores.blast_radius_safety
-    );
-
-    for finding in &report.findings {
-        println!("- [{:?}] {}", finding.severity, finding.title);
-        println!("  {}", finding.description);
+    if let Some(output_path) = args.output {
+        fs::write(output_path, rendered)?;
+    } else {
+        println!("{rendered}");
     }
 
-    let _format = args.format;
-    let _output = args.output;
-    let _fail_under = args.fail_under;
-
+    if let Some(minimum_score) = args.fail_under
+        && report.scores.overall < minimum_score
+    {
+        std::process::exit(1);
+    }
     Ok(())
 }
