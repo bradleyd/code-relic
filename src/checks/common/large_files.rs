@@ -6,22 +6,19 @@ use std::{
 
 use walkdir::WalkDir;
 
-use crate::{Category, Config, Evidence, Finding, Repo, Result, Severity, checks::Check};
+use crate::{
+    Category, Config, Evidence, Finding, Repo, Result, Severity,
+    checks::{Check, traits::CheckContext},
+};
 
-pub struct LargeFilesCheck {
-    config: Config,
-}
+pub struct LargeFilesCheck;
 
 impl LargeFilesCheck {
-    pub fn new(config: Config) -> Self {
-        Self { config }
-    }
-
-    fn should_skip(&self, path: &Path) -> bool {
+    fn should_skip(&self, path: &Path, config: &Config) -> bool {
         path.components().any(|component| {
             let component = component.as_os_str().to_string_lossy();
 
-            self.config
+            config
                 .excludes
                 .iter()
                 .any(|excluded| component == excluded.as_str())
@@ -68,12 +65,12 @@ impl Check for LargeFilesCheck {
         "Large source files"
     }
 
-    async fn run(&self, repo: &Repo) -> Result<Vec<Finding>> {
+    async fn run(&self, repo: &Repo, ctx: &CheckContext) -> Result<Vec<Finding>> {
         let mut findings = Vec::new();
 
         for entry in WalkDir::new(repo.path())
             .into_iter()
-            .filter_entry(|entry| !self.should_skip(entry.path()))
+            .filter_entry(|entry| !self.should_skip(entry.path(), &ctx.config))
             .filter_map(std::result::Result::ok)
             .filter(|entry| entry.file_type().is_file())
         {
@@ -85,11 +82,11 @@ impl Check for LargeFilesCheck {
 
             let line_count = Self::count_lines(path)?;
 
-            if line_count < self.config.large_file_warning_lines {
+            if line_count < ctx.config.large_file_warning_lines {
                 continue;
             }
 
-            let severity = if line_count >= self.config.large_file_high_lines {
+            let severity = if line_count >= ctx.config.large_file_high_lines {
                 Severity::High
             } else {
                 Severity::Medium
@@ -113,7 +110,7 @@ impl Check for LargeFilesCheck {
                 evidence: Evidence::Metric {
                     name: "line_count".to_string(),
                     value: line_count as f64,
-                    threshold: Some(self.config.large_file_warning_lines as f64),
+                    threshold: Some(ctx.config.large_file_warning_lines as f64),
                 },
             });
         }
@@ -130,7 +127,7 @@ impl Check for LargeFilesCheck {
                 evidence: Evidence::Text {
                     detail: format!(
                         "No source-like files exceeded {} lines.",
-                        self.config.large_file_warning_lines
+                        ctx.config.large_file_warning_lines
                     ),
                 },
             });

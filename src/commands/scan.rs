@@ -3,7 +3,7 @@ use std::{fs, path::PathBuf};
 use clap::{Parser, ValueEnum};
 
 use crate::{
-    Config, JsonRenderer, Language, MarkdownRenderer, Renderer, Repo, Report, Result, TextRenderer,
+    Config, JsonRenderer, MarkdownRenderer, Renderer, Repo, Report, Result, TextRenderer,
     WeightedScorer, scanner::Scanner,
 };
 
@@ -37,11 +37,7 @@ pub async fn run(args: ScanArgs) -> Result<()> {
     let scorer = WeightedScorer::new();
     let scores = scorer.score(&findings);
 
-    let languages = if repo.is_rust() {
-        vec![Language::Rust]
-    } else {
-        Vec::new()
-    };
+    let languages = scanner.detected_languages(&repo);
 
     let report = Report {
         tool: "coderelic".to_string(),

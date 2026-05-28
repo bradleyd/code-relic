@@ -1,4 +1,7 @@
-use crate::{Category, Evidence, Finding, Repo, Result, Severity, checks::Check};
+use crate::{
+    Category, Evidence, Finding, Repo, Result, Severity,
+    checks::{Check, traits::CheckContext},
+};
 
 pub struct CiCheck;
 
@@ -12,7 +15,7 @@ impl Check for CiCheck {
         "CI presence"
     }
 
-    async fn run(&self, repo: &Repo) -> Result<Vec<Finding>> {
+    async fn run(&self, repo: &Repo, _ctx: &CheckContext) -> Result<Vec<Finding>> {
         let candidates = [
             ".github/workflows",
             ".gitlab-ci.yml",

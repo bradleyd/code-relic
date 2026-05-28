@@ -3,9 +3,11 @@ pub mod cli;
 pub mod commands;
 pub mod config;
 pub mod error;
+pub mod languages;
 pub mod model;
 pub mod repo;
 pub mod report;
+pub mod runner;
 pub mod scanner;
 pub mod scoring;
 
@@ -14,4 +16,5 @@ pub use error::{Error, Result};
 pub use model::{Category, Evidence, Finding, Language, RepoSummary, Report, Scores, Severity};
 pub use repo::Repo;
 pub use report::{JsonRenderer, MarkdownRenderer, Renderer, TextRenderer};
+pub use runner::{CommandOutput, CommandRunner, CommandSpec, TokioCommandRunner};
 pub use scoring::WeightedScorer;

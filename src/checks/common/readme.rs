@@ -1,4 +1,7 @@
-use crate::{Category, Evidence, Finding, Repo, Result, Severity, checks::Check};
+use crate::{
+    Category, Evidence, Finding, Repo, Result, Severity,
+    checks::{Check, traits::CheckContext},
+};
 
 pub struct ReadmeCheck;
 
@@ -12,7 +15,7 @@ impl Check for ReadmeCheck {
         "README presence"
     }
 
-    async fn run(&self, repo: &Repo) -> Result<Vec<Finding>> {
+    async fn run(&self, repo: &Repo, _ctx: &CheckContext) -> Result<Vec<Finding>> {
         let candidates = ["README.md", "README", "readme.md"];
 
         let found = candidates
