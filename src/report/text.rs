@@ -1,4 +1,4 @@
-use crate::{Language, Report, Result, report::Renderer};
+use crate::{Report, Result, report::Renderer};
 
 pub struct TextRenderer;
 
@@ -9,15 +9,18 @@ impl Renderer for TextRenderer {
         output.push_str("CodeRelic scan\n");
         output.push_str(&format!("Repo: {}\n", report.repo.name));
         output.push_str(&format!("Path: {}\n", report.repo.path));
-        output.push_str(&format!(
-            "Rust project: {}\n",
-            if report.languages.contains(&Language::Rust) {
-                "yes"
-            } else {
-                "no"
-            }
-        ));
+        let languages = if report.languages.is_empty() {
+            "none".to_string()
+        } else {
+            report
+                .languages
+                .iter()
+                .map(|language| format!("{language:?}").to_lowercase())
+                .collect::<Vec<_>>()
+                .join(", ")
+        };
 
+        output.push_str(&format!("Detected languages: {languages}\n"));
         output.push('\n');
         output.push_str(&format!(
             "AI Change Readiness: {} / 100\n",

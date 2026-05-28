@@ -12,7 +12,7 @@ impl Renderer for MarkdownRenderer {
         output.push_str(&format!("- **Name:** {}\n", report.repo.name));
         output.push_str(&format!("- **Path:** `{}`\n", report.repo.path));
         output.push_str(&format!(
-            "- **Rust project:** {}\n",
+            "- **project language:** {}\n",
             if report.languages.contains(&Language::Rust) {
                 "yes"
             } else {
