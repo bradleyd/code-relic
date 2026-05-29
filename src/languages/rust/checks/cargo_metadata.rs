@@ -130,9 +130,7 @@ impl Check for CargoMetadataCheck {
         Ok(vec![Finding {
             id: "rust.cargo_metadata.loaded".to_string(),
             title: "Cargo metadata loaded".to_string(),
-            description: format!(
-                "Cargo metadata was loaded for 1 workspace package(s), 1 target(s), 7 direct dependency declaration(s), and 0 feature group(s)."
-            ),
+            description: "Cargo metadata was loaded for 1 workspace package(s), 1 target(s), 7 direct dependency declaration(s), and 0 feature group(s).".to_string(),
             category: Category::DependencyHygiene,
             language: Some(Language::Rust),
             penalty: 0,
