@@ -32,10 +32,6 @@ impl Repo {
             .to_string()
     }
 
-    pub fn is_rust(&self) -> bool {
-        self.path.join("Cargo.toml").exists()
-    }
-
     pub fn summary(&self) -> RepoSummary {
         RepoSummary {
             path: self.path.display().to_string(),
