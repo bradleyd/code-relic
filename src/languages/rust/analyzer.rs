@@ -3,6 +3,8 @@ use crate::{
     checks::{Check, traits::CheckContext},
     languages::LanguageAnalyzer,
     languages::rust::checks::CargoCheck,
+    languages::rust::checks::CargoClippy,
+    languages::rust::checks::CargoFmt,
     languages::rust::checks::CargoTestNoRun,
 };
 
@@ -13,7 +15,12 @@ pub struct RustAnalyzer {
 impl RustAnalyzer {
     pub fn new() -> Self {
         Self {
-            checks: vec![Box::new(CargoCheck), Box::new(CargoTestNoRun)],
+            checks: vec![
+                Box::new(CargoCheck),
+                Box::new(CargoTestNoRun),
+                Box::new(CargoClippy),
+                Box::new(CargoFmt),
+            ],
         }
     }
 }
