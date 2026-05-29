@@ -1,4 +1,4 @@
-use crate::{Category, Finding, Scores, Severity};
+use crate::{Category, Finding, Scores};
 
 pub struct WeightedScorer;
 
@@ -16,7 +16,7 @@ impl WeightedScorer {
         let mut blast_radius_safety = RawScore::default();
 
         for finding in findings {
-            let penalty = penalty_for(finding.severity);
+            let penalty = i32::from(finding.penalty);
 
             match finding.category {
                 Category::BuildHealth => build_health.subtract(penalty),
@@ -80,16 +80,6 @@ impl RawScore {
 
     fn as_u8(self) -> u8 {
         self.value.clamp(0, 100) as u8
-    }
-}
-
-fn penalty_for(severity: Severity) -> i32 {
-    match severity {
-        Severity::Info => 0,
-        Severity::Low => 4,
-        Severity::Medium => 10,
-        Severity::High => 25,
-        Severity::Critical => 40,
     }
 }
 

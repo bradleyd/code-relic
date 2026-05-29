@@ -11,3 +11,13 @@ use crate::{Report, Result};
 pub trait Renderer {
     fn render(&self, report: &Report) -> Result<String>;
 }
+
+fn penalty_label(penalty: u8) -> &'static str {
+    match penalty {
+        0 => "Info",
+        1..=5 => "Minor",
+        6..=15 => "Moderate",
+        16..=30 => "Major",
+        _ => "Severe",
+    }
+}

@@ -1,6 +1,4 @@
-use crate::{
-    Category, CommandSpec, Evidence, Finding, Language, Repo, Result, Severity, checks::Check,
-};
+use crate::{Category, CommandSpec, Evidence, Finding, Language, Repo, Result, checks::Check};
 
 use crate::checks::traits::CheckContext;
 
@@ -34,9 +32,9 @@ impl Check for CargoCheck {
                 id: "rust.cargo_check.timed_out".to_string(),
                 title: "cargo check timed out".to_string(),
                 description: "cargo check did not complete before the configured timeout. AI-assisted changes are riskier when the build feedback loop is slow or unavailable.".to_string(),
-                severity: Severity::High,
                 category: Category::BuildHealth,
                 language: Some(Language::Rust),
+                penalty: 35,
                 evidence: Evidence::Command {
                     command: command.to_string(),
                     exit_code: output.exit_code,
@@ -49,9 +47,9 @@ impl Check for CargoCheck {
                 id: "rust.cargo_check.passed".to_string(),
                 title: "cargo check passed".to_string(),
                 description: "The Rust project passes cargo check. This improves confidence that the baseline code can be validated before and after AI-assisted changes.".to_string(),
-                severity: Severity::Info,
                 category: Category::BuildHealth,
                 language: Some(Language::Rust),
+                penalty: 0,
                 evidence: Evidence::Command {
                     command: command.to_string(),
                     exit_code: output.exit_code,
@@ -64,9 +62,9 @@ impl Check for CargoCheck {
                 id: "rust.cargo_check.failed".to_string(),
                 title: "cargo check failed".to_string(),
                 description: "The Rust project does not currently pass cargo check. AI-assisted changes are riskier when the baseline build is already failing.".to_string(),
-                severity: Severity::High,
                 category: Category::BuildHealth,
                 language: Some(Language::Rust),
+                penalty: 35,
                 evidence: Evidence::Command {
                     command: command.to_string(),
                     exit_code: output.exit_code,

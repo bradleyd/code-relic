@@ -1,4 +1,7 @@
-use crate::{Report, Result, report::Renderer};
+use crate::{
+    Report, Result,
+    report::{Renderer, penalty_label},
+};
 
 pub struct TextRenderer;
 
@@ -55,7 +58,11 @@ impl Renderer for TextRenderer {
         output.push_str("Findings:\n");
 
         for finding in &report.findings {
-            output.push_str(&format!("- [{:?}] {}\n", finding.severity, finding.title));
+            output.push_str(&format!(
+                "- [{}] {}\n",
+                penalty_label(finding.penalty),
+                finding.title
+            ));
             output.push_str(&format!("  {}\n", finding.description));
         }
 

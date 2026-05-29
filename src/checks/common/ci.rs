@@ -1,5 +1,5 @@
 use crate::{
-    Category, Evidence, Finding, Repo, Result, Severity,
+    Category, Evidence, Finding, Repo, Result,
     checks::{Check, traits::CheckContext},
 };
 
@@ -32,9 +32,9 @@ impl Check for CiCheck {
                 id: "common.ci.present".to_string(),
                 title: "CI configuration found".to_string(),
                 description: "A CI configuration was found. This improves confidence that changes can be validated outside a developer machine.".to_string(),
-                severity: Severity::Info,
                 category: Category::BuildHealth,
                 language: None,
+                penalty: 0,
                 evidence: Evidence::File {
                     path: path.to_string(),
                     detail: "CI configuration exists.".to_string(),
@@ -44,9 +44,9 @@ impl Check for CiCheck {
                 id: "common.ci.missing".to_string(),
                 title: "CI configuration missing".to_string(),
                 description: "No common CI configuration was found. AI-assisted changes are riskier when validation only happens manually or locally.".to_string(),
-                severity: Severity::Low,
                 category: Category::BuildHealth,
                 language: None,
+                penalty: 15,
                 evidence: Evidence::Text {
                     detail: "Checked .github/workflows, .gitlab-ci.yml, .circleci/config.yml, and buildkite.".to_string(),
                 },

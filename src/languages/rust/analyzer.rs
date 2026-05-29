@@ -5,6 +5,7 @@ use crate::{
     languages::rust::checks::CargoCheck,
     languages::rust::checks::CargoClippy,
     languages::rust::checks::CargoFmt,
+    languages::rust::checks::CargoMetadataCheck,
     languages::rust::checks::CargoTestNoRun,
 };
 
@@ -20,6 +21,7 @@ impl RustAnalyzer {
                 Box::new(CargoTestNoRun),
                 Box::new(CargoClippy),
                 Box::new(CargoFmt),
+                Box::new(CargoMetadataCheck),
             ],
         }
     }

@@ -1,6 +1,4 @@
-use crate::{
-    Category, CommandSpec, Evidence, Finding, Language, Repo, Result, Severity, checks::Check,
-};
+use crate::{Category, CommandSpec, Evidence, Finding, Language, Repo, Result, checks::Check};
 
 use crate::checks::traits::CheckContext;
 
@@ -38,9 +36,9 @@ impl Check for CargoClippy {
                 id: "rust.cargo_clippy.timed_out".to_string(),
                 title: "cargo clippy timed out".to_string(),
                 description: "cargo clippy did not complete before the configured timeout. AI-assisted changes are riskier when test feedback is slow or unavailable.".to_string(),
-                severity: Severity::Medium,
                 category: Category::Complexity,
                 language: Some(Language::Rust),
+                penalty: 12,
                 evidence: Evidence::Command {
                     command: command.to_string(),
                     exit_code: output.exit_code,
@@ -52,10 +50,10 @@ impl Check for CargoClippy {
             Finding {
                 id: "rust.cargo_clippy.passed".to_string(),
                 title: "cargo clippy passed".to_string(),
-                description: "cargo clippy --all-targets --all-features passed. This improves confidence that AI-assisted changes can be validated.".to_string(),
-                severity: Severity::Info,
+                description: "cargo clippy --all-targets --all-features passed. This improves confidence that common Rust maintainability issues are not present in the current baseline.".to_string(),
                 category: Category::Complexity,
                 language: Some(Language::Rust),
+                penalty: 0,
                 evidence: Evidence::Command {
                     command: command.to_string(),
                     exit_code: output.exit_code,
@@ -68,9 +66,9 @@ impl Check for CargoClippy {
                 id: "rust.cargo_clippy.failed".to_string(),
                 title: "cargo clippy failed".to_string(),
                 description: "cargo clippy --all-targets --all-features did not pass. This may indicate lint issues, feature-combination problems, or project-specific build assumptions.".to_string(),
-                severity: Severity::Medium,
                 category: Category::Complexity,
                 language: Some(Language::Rust),
+                penalty: 12,
                 evidence: Evidence::Command {
                     command: command.to_string(),
                     exit_code: output.exit_code,

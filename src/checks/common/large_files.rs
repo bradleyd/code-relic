@@ -7,7 +7,7 @@ use std::{
 use walkdir::WalkDir;
 
 use crate::{
-    Category, Config, Evidence, Finding, Repo, Result, Severity,
+    Category, Config, Evidence, Finding, Repo, Result,
     checks::{Check, traits::CheckContext},
 };
 
@@ -86,10 +86,10 @@ impl Check for LargeFilesCheck {
                 continue;
             }
 
-            let severity = if line_count >= ctx.config.large_file_high_lines {
-                Severity::High
+            let penalty = if line_count >= ctx.config.large_file_high_lines {
+                25
             } else {
-                Severity::Medium
+                15
             };
 
             let relative_path = path
@@ -104,9 +104,9 @@ impl Check for LargeFilesCheck {
                 description: format!(
                     "{relative_path} has {line_count} lines. Large files can increase AI-change risk because more behavior is concentrated in one place."
                 ),
-                severity,
                 category: Category::Complexity,
                 language: None,
+                penalty,
                 evidence: Evidence::Metric {
                     name: "line_count".to_string(),
                     value: line_count as f64,
@@ -121,9 +121,9 @@ impl Check for LargeFilesCheck {
                 title: "No large source files detected".to_string(),
                 description: "No source-like files exceeded the configured large-file threshold."
                     .to_string(),
-                severity: Severity::Info,
                 category: Category::Complexity,
                 language: None,
+                penalty: 0,
                 evidence: Evidence::Text {
                     detail: format!(
                         "No source-like files exceeded {} lines.",

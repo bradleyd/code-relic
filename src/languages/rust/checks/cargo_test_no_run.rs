@@ -1,6 +1,4 @@
-use crate::{
-    Category, CommandSpec, Evidence, Finding, Language, Repo, Result, Severity, checks::Check,
-};
+use crate::{Category, CommandSpec, Evidence, Finding, Language, Repo, Result, checks::Check};
 
 use crate::checks::traits::CheckContext;
 
@@ -34,9 +32,9 @@ impl Check for CargoTestNoRun {
                 id: "rust.cargo_test_no_run.timed_out".to_string(),
                 title: "cargo test no run timed out".to_string(),
                 description: "cargo test --no-run did not complete before the configured timeout. AI-assisted changes are riskier when test feedback is slow or unavailable.".to_string(),
-                severity: Severity::High,
                 category: Category::BuildHealth,
                 language: Some(Language::Rust),
+                penalty: 30,
                 evidence: Evidence::Command {
                     command: command.to_string(),
                     exit_code: output.exit_code,
@@ -49,9 +47,9 @@ impl Check for CargoTestNoRun {
                 id: "rust.cargo_test_no_run.passed".to_string(),
                 title: "cargo test no-run passed".to_string(),
                 description: "The Rust project’s test targets compile. This improves confidence that AI-assisted changes can be validated before tests are executed.".to_string(),
-                severity: Severity::Info,
                 category: Category::BuildHealth,
                 language: Some(Language::Rust),
+                penalty: 0,
                 evidence: Evidence::Command {
                     command: command.to_string(),
                     exit_code: output.exit_code,
@@ -64,9 +62,9 @@ impl Check for CargoTestNoRun {
                 id: "rust.cargo_test_no_run.failed".to_string(),
                 title: "cargo check failed".to_string(),
                 description: "The Rust project’s test targets do not compile. AI-assisted behavior changes are riskier when the test harness is already broken.".to_string(),
-                severity: Severity::High,
                 category: Category::BuildHealth,
                 language: Some(Language::Rust),
+                penalty: 30,
                 evidence: Evidence::Command {
                     command: command.to_string(),
                     exit_code: output.exit_code,

@@ -1,5 +1,5 @@
 use crate::{
-    Category, Evidence, Finding, Repo, Result, Severity,
+    Category, Evidence, Finding, Repo, Result,
     checks::{Check, traits::CheckContext},
 };
 
@@ -27,9 +27,9 @@ impl Check for ReadmeCheck {
                 id: "common.readme.present".to_string(),
                 title: "README found".to_string(),
                 description: "A README file exists at the repository root.".to_string(),
-                severity: Severity::Info,
                 category: Category::ContextQuality,
                 language: None,
+                penalty: 0,
                 evidence: Evidence::Text {
                     detail: "README file found at repository root.".to_string(),
                 },
@@ -39,9 +39,9 @@ impl Check for ReadmeCheck {
                 id: "common.readme.missing".to_string(),
                 title: "README missing".to_string(),
                 description: "No README file was found at the repository root. AI-assisted changes are riskier when basic project context is missing.".to_string(),
-                severity: Severity::Medium,
                 category: Category::ContextQuality,
                 language: None,
+                penalty: 15,
                 evidence: Evidence::Text {
                     detail: "Checked README.md, README, and readme.md.".to_string(),
                 },

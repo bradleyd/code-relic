@@ -4,7 +4,6 @@ pub mod finding;
 pub mod language;
 pub mod report;
 pub mod score;
-pub mod severity;
 
 pub use category::Category;
 pub use evidence::Evidence;
@@ -12,4 +11,3 @@ pub use finding::Finding;
 pub use language::Language;
 pub use report::{RepoSummary, Report};
 pub use score::Scores;
-pub use severity::Severity;

@@ -1,4 +1,7 @@
-use crate::{Language, Report, Result, report::Renderer};
+use crate::{
+    Language, Report, Result,
+    report::{Renderer, penalty_label},
+};
 
 pub struct MarkdownRenderer;
 
@@ -59,7 +62,8 @@ impl Renderer for MarkdownRenderer {
         for finding in &report.findings {
             output.push_str(&format!(
                 "### {:?}: {}\n\n",
-                finding.severity, finding.title
+                penalty_label(finding.penalty),
+                finding.title
             ));
             output.push_str(&format!("{}\n\n", finding.description));
             output.push_str(&format!("- **ID:** `{}`\n", finding.id));
